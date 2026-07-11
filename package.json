@@ -1,0 +1,33 @@
+{
+  "name": "adb-plugin-invite-tracker",
+  "version": "1.0.0",
+  "description": "Invite tracking, leaderboard, join/leave logging, and milestone roles.",
+  "main": "index.js",
+  "files": [
+    "index.js",
+    "plugin.json",
+    "commands",
+    "models",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "node test/local-harness.js"
+  },
+  "keywords": [
+    "adb-plugin",
+    "discord",
+    "discord.js",
+    "invite",
+    "tracker"
+  ],
+  "author": "DeadIndian",
+  "license": "AGPL-3.0-only",
+  "peerDependencies": {
+    "discord.js": ">=14.0.0",
+    "mongoose": ">=7.0.0"
+  },
+  "devDependencies": {
+    "mongoose": "^8.0.0"
+  }
+}

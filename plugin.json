@@ -1,0 +1,34 @@
+{
+  "name": "adb-plugin-invite-tracker",
+  "displayName": "Invite Tracker",
+  "version": "1.0.0",
+  "description": "Track who invited whom. Invite leaderboard, join/leave logging, fake join detection, and milestone roles.",
+  "author": "DeadIndian",
+  "main": "index.js",
+  "requiresRestart": false,
+  "permissions": [
+    "db.read",
+    "db.write",
+    "commands.register"
+  ],
+  "discordPermissions": [
+    "ManageGuild",
+    "ManageRoles",
+    "SendMessages"
+  ],
+  "configSchema": {
+    "type": "object",
+    "properties": {
+      "trackLeaves": {
+        "type": "boolean",
+        "default": true,
+        "description": "Deduct invite credit when an invited member leaves"
+      },
+      "bonusRoles": {
+        "type": "string",
+        "default": "",
+        "description": "Comma-separated: roleID:inviteCount e.g. 123:5,456:10"
+      }
+    }
+  }
+}
