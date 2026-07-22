@@ -1,6 +1,6 @@
 {
   "name": "adb-plugin-invite-tracker",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Invite tracking, leaderboard, join/leave logging, and milestone roles.",
   "main": "index.js",
   "files": [

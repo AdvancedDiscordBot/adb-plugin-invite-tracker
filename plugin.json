@@ -1,34 +1,40 @@
 {
-  "name": "adb-plugin-invite-tracker",
-  "displayName": "Invite Tracker",
-  "version": "1.0.0",
-  "description": "Track who invited whom. Invite leaderboard, join/leave logging, fake join detection, and milestone roles.",
-  "author": "DeadIndian",
-  "main": "index.js",
-  "requiresRestart": false,
-  "permissions": [
-    "db.read",
-    "db.write",
-    "commands.register"
-  ],
-  "discordPermissions": [
-    "ManageGuild",
-    "ManageRoles",
-    "SendMessages"
-  ],
-  "configSchema": {
-    "type": "object",
-    "properties": {
-      "trackLeaves": {
-        "type": "boolean",
-        "default": true,
-        "description": "Deduct invite credit when an invited member leaves"
-      },
-      "bonusRoles": {
-        "type": "string",
-        "default": "",
-        "description": "Comma-separated: roleID:inviteCount e.g. 123:5,456:10"
-      }
-    }
-  }
+	"name": "adb-plugin-invite-tracker",
+	"displayName": "Invite Tracker",
+	"version": "1.1.0",
+	"description": "Track who invited whom. Invite leaderboard, join/leave logging, fake join detection, and milestone roles.",
+	"author": "DeadIndian",
+	"main": "index.js",
+	"requiresRestart": true,
+	"isolation": false,
+	"manifestVersion": 2,
+	"process": {
+		"model": "persistent",
+		"maxExecutionMs": 15000,
+		"memoryMb": 256,
+		"persistentReason": "Runs un-isolated (system:raw-client) to diff guild.invites.fetch() on member join (the only way to attribute an invite), maintain an invite cache on ready/inviteCreate/inviteDelete, and grant milestone roles — the invite-manager API and role mutation are outside the sandboxed RPC surface."
+	},
+	"capabilities": {
+		"system": ["raw-client"],
+		"storage": ["own-collection"],
+		"discord": ["ManageGuild", "ManageRoles", "SendMessages"]
+	},
+	"permissions": {
+		"system": ["raw-client"],
+		"storage": ["own-collection"],
+		"discord": ["ManageGuild", "ManageRoles", "SendMessages"],
+		"network": { "outbound": [] },
+		"filesystem": { "read": [], "write": [] },
+		"childProcess": false,
+		"nativeAddons": false
+	},
+	"declaredDependencies": [],
+	"discordPermissions": ["ManageGuild", "ManageRoles", "SendMessages"],
+	"configSchema": {
+		"type": "object",
+		"properties": {
+			"trackLeaves": { "type": "boolean", "default": true, "description": "Deduct invite credit when an invited member leaves" },
+			"bonusRoles": { "type": "string", "default": "", "description": "Comma-separated: roleID:inviteCount e.g. 123:5,456:10" }
+		}
+	}
 }
