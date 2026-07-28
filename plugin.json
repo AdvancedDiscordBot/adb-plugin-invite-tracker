@@ -1,7 +1,7 @@
 {
 	"name": "adb-plugin-invite-tracker",
 	"displayName": "Invite Tracker",
-	"version": "1.1.0",
+	"version": "1.2.0",
 	"description": "Track who invited whom. Invite leaderboard, join/leave logging, fake join detection, and milestone roles.",
 	"author": "DeadIndian",
 	"main": "index.js",
@@ -23,12 +23,23 @@
 		"system": ["raw-client"],
 		"storage": ["own-collection"],
 		"discord": ["ManageGuild", "ManageRoles", "SendMessages"],
+		"hooks": ["subscribe"],
 		"network": { "outbound": [] },
 		"filesystem": { "read": [], "write": [] },
 		"childProcess": false,
 		"nativeAddons": false
 	},
 	"declaredDependencies": [],
+	"engines": {
+		"core": ">=2.0.0",
+		"plugins": { "administration": ">=2.0.0" }
+	},
+	"settings": {
+		"commandPermissions": true,
+		"schema": [
+			{ "key": "trackLeaves", "type": "boolean", "label": "Track leaves", "default": true }
+		]
+	},
 	"discordPermissions": ["ManageGuild", "ManageRoles", "SendMessages"],
 	"configSchema": {
 		"type": "object",
