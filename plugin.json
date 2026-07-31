@@ -1,7 +1,7 @@
 {
 	"name": "adb-plugin-invite-tracker",
 	"displayName": "Invite Tracker",
-	"version": "1.2.0",
+	"version": "1.3.0",
 	"description": "Track who invited whom. Invite leaderboard, join/leave logging, fake join detection, and milestone roles.",
 	"author": "DeadIndian",
 	"main": "index.js",
@@ -41,6 +41,26 @@
 		]
 	},
 	"discordPermissions": ["ManageGuild", "ManageRoles", "SendMessages"],
+	"webUi": {
+		"memberPages": [
+			{
+				"path": "/me/invites",
+				"label": "My Invites",
+				"icon": "UserPlus",
+				"source": { "model": "inviteStats", "scope": "member", "limit": 1 },
+				"view": {
+					"type": "stat",
+					"stats": [
+						{ "field": "totalInvites", "label": "Total" },
+						{ "field": "regularInvites", "label": "Regular" },
+						{ "field": "leaveInvites", "label": "Left" },
+						{ "field": "fakeInvites", "label": "Fake" },
+						{ "field": "bonusInvites", "label": "Bonus" }
+					]
+				}
+			}
+		]
+	},
 	"configSchema": {
 		"type": "object",
 		"properties": {
