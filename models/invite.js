@@ -31,8 +31,8 @@ module.exports.InviteCodeSchema.index({ guildId: 1, code: 1 }, { unique: true })
 module.exports.JoinLogSchema = new Schema({
 	guildId: { type: String, required: true, index: true },
 	userId: { type: String, required: true }, // the person who joined
-	inviterId: { type: String, required: true }, // who invited them
-	inviteCode: { type: String, required: true },
+	inviterId: { type: String, default: null }, // null when attribution is unknown
+	inviteCode: { type: String, default: null },
 	joinedAt: { type: Date, default: Date.now },
 });
 

@@ -42,7 +42,19 @@ function fakeInteraction(_sub, opts = {}, asUser = "user-1") {
 			getInteger: (n) => (n in opts ? opts[n] : null),
 			getString: (n) => (n in opts ? opts[n] : null),
 		},
-		reply: async (payload) => {
+		async reply(payload) {
+			if (this.deferred || this.replied) throw new Error("Interaction already acknowledged");
+			this.replied = true;
+			replies.push(payload);
+			return payload;
+		},
+		async deferReply() {
+			if (this.deferred || this.replied) throw new Error("Interaction already acknowledged");
+			this.deferred = true;
+		},
+		async editReply(payload) {
+			if (!this.deferred) throw new Error("Interaction not acknowledged");
+			this.replied = true;
 			replies.push(payload);
 			return payload;
 		},
@@ -97,6 +109,9 @@ async function run() {
 	assert(/Added 3 bonus invite/.test(add.replies[0].content), "admin add: replies with confirmation");
 	assert(/Total: 8/.test(add.replies[0].content), "admin add: totalInvites incremented (5 -> 8)");
 
+	const regressions = await require("./regressions")();
+	passed += regressions.passed;
+	failed += regressions.failed;
 	console.log(`\n=== Results: ${passed} passed, ${failed} failed ===\n`);
 	process.exit(failed > 0 ? 1 : 0);
 }

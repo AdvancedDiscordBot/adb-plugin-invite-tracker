@@ -38,18 +38,18 @@ function createInvitesCommand(InviteStatsModel, JoinLogModel, db) {
 			if (sub === "me") {
 				const stats = await InviteStatsModel.findOne({ guildId, userId: interaction.user.id });
 				if (!stats || stats.totalInvites === 0) {
-					return interaction.reply({ content: "You haven't invited anyone yet.", ephemeral: true });
+					return interaction.editReply({ content: "You haven't invited anyone yet." });
 				}
-				return interaction.reply({ embeds: [makeStatsEmbed(interaction.user, stats)], ephemeral: true });
+				return interaction.editReply({ embeds: [makeStatsEmbed(interaction.user, stats)] });
 			}
 
 			if (sub === "user") {
 				const target = interaction.options.getUser("user");
 				const stats = await InviteStatsModel.findOne({ guildId, userId: target.id });
 				if (!stats || stats.totalInvites === 0) {
-					return interaction.reply({ content: `${target.tag} hasn't invited anyone yet.`, ephemeral: true });
+					return interaction.editReply({ content: `${target.tag} hasn't invited anyone yet.` });
 				}
-				return interaction.reply({ embeds: [makeStatsEmbed(target, stats)], ephemeral: true });
+				return interaction.editReply({ embeds: [makeStatsEmbed(target, stats)] });
 			}
 
 			if (sub === "leaderboard") {
@@ -58,7 +58,7 @@ function createInvitesCommand(InviteStatsModel, JoinLogModel, db) {
 					.limit(10);
 
 				if (top.length === 0) {
-					return interaction.reply({ content: "No invites yet.", ephemeral: true });
+					return interaction.editReply({ content: "No invites yet." });
 				}
 
 				const lines = [];
@@ -75,13 +75,13 @@ function createInvitesCommand(InviteStatsModel, JoinLogModel, db) {
 					.setTitle("🏆 Invite Leaderboard")
 					.setDescription(lines.join("\n"));
 
-				return interaction.reply({ embeds: [embed], ephemeral: true });
+				return interaction.editReply({ embeds: [embed] });
 			}
 		},
 	};
 }
 
-function createInvitesAdminCommand(InviteStatsModel, InviteCodeModel, JoinLogModel, db) {
+function createInvitesAdminCommand(InviteStatsModel, InviteCodeModel, JoinLogModel, db, syncGuild) {
 	return {
 		data: {
 			name: "invites-admin",
@@ -132,9 +132,8 @@ function createInvitesAdminCommand(InviteStatsModel, InviteCodeModel, JoinLogMod
 					{ $inc: { bonusInvites: amount, totalInvites: amount } },
 					{ upsert: true, new: true }
 				);
-				return interaction.reply({
+				return interaction.editReply({
 					content: `Added ${amount} bonus invite(s) to ${target.tag}. Total: ${stats.totalInvites}`,
-					ephemeral: true,
 				});
 			}
 
@@ -142,34 +141,24 @@ function createInvitesAdminCommand(InviteStatsModel, InviteCodeModel, JoinLogMod
 				const guild = await interaction.client.guilds.fetch(guildId);
 				const invites = await guild.invites.fetch().catch(() => null);
 				if (!invites || invites.size === 0) {
-					return interaction.reply({ content: "No active invite codes.", ephemeral: true });
+					return interaction.editReply({ content: "No active invite codes." });
 				}
 				const lines = invites.map(
 					(i) => `\`${i.code}\` — ${i.uses} use(s) — by <@${i.inviter?.id || "unknown"}>`
 				);
-				return interaction.reply({ content: lines.join("\n").substring(0, 1900), ephemeral: true });
+				return interaction.editReply({ content: lines.join("\n").substring(0, 1900) });
 			}
 
 			if (sub === "sync") {
-				const guild = await interaction.client.guilds.fetch(guildId);
-				const invites = await guild.invites.fetch().catch(() => []);
-				for (const invite of invites.values()) {
-					await InviteCodeModel.findOneAndUpdate(
-						{ guildId, code: invite.code },
-						{
-							creatorId: invite.inviter?.id || "unknown",
-							uses: invite.uses,
-							maxUses: invite.maxUses || 0,
-							temporary: invite.temporary || false,
-							expiresAt: invite.expiresAt || null,
-						},
-						{ upsert: true }
-					);
+				try {
+					const guild = await interaction.client.guilds.fetch(guildId);
+					const count = await syncGuild(guild);
+					return interaction.editReply({
+						content: count === null ? "Invite tracking is disabled in this server." : `Synced ${count} invite code(s) from Discord.`,
+					});
+				} catch {
+					return interaction.editReply({ content: "Unable to sync invites. Check the bot's Manage Server permission and try again." });
 				}
-				return interaction.reply({
-					content: `Synced ${invites.size} invite code(s) from Discord.`,
-					ephemeral: true,
-				});
 			}
 		},
 	};

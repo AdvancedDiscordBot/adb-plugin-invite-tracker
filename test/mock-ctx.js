@@ -58,6 +58,9 @@ function createFakeModel(fullName, schema) {
 	const matches = (doc, query = {}) =>
 		Object.keys(query).every((k) => {
 			if (k === "_id") return String(doc._id) === String(query[k]);
+			if (query[k] && typeof query[k] === "object" && "$nin" in query[k]) {
+				return !query[k].$nin.includes(doc[k]);
+			}
 			return doc[k] === query[k];
 		});
 

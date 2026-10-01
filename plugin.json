@@ -17,7 +17,8 @@
 	"capabilities": {
 		"system": ["raw-client"],
 		"storage": ["own-collection"],
-		"discord": ["ManageGuild", "ManageRoles", "SendMessages"]
+		"discord": ["ManageGuild", "ManageRoles", "SendMessages"],
+		"hooks": ["subscribe"]
 	},
 	"permissions": {
 		"system": ["raw-client"],
@@ -37,6 +38,7 @@
 	"settings": {
 		"commandPermissions": true,
 		"schema": [
+			{ "key": "enabled", "type": "boolean", "label": "Enable invite tracking", "default": true },
 			{ "key": "trackLeaves", "type": "boolean", "label": "Track leaves", "default": true }
 		]
 	},
@@ -64,6 +66,7 @@
 	"configSchema": {
 		"type": "object",
 		"properties": {
+			"enabled": { "type": "boolean", "default": true, "description": "Enable invite tracking and commands for this server" },
 			"trackLeaves": { "type": "boolean", "default": true, "description": "Deduct invite credit when an invited member leaves" },
 			"bonusRoles": { "type": "string", "default": "", "description": "Comma-separated: roleID:inviteCount e.g. 123:5,456:10" }
 		}
