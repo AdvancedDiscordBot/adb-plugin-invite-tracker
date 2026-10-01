@@ -26,8 +26,22 @@ Track who invites whom in your Discord server with a detailed leaderboard.
 
 | Key | Default | Description |
 |-----|---------|-------------|
+| `enabled` | true | Enable tracking and invite commands for this server |
 | `trackLeaves` | true | Deduct invites on leave |
 | `bonusRoles` | — | `roleID:count,roleID:count` — auto-assign roles at milestones |
+
+Invite caches are refreshed on client readiness, runtime load, new guilds, and
+manual sync. Joins and leaves are serialized per guild; duplicate join/leave
+events do not change credit twice. Disabling leave deductions still clears the
+departed member's join record so a later rejoin can be tracked.
+
+Discord does not include the invite code in member-join events. Ambiguous changes,
+missing permissions, and unavailable/deleted invites remain unattributed. A
+fresh baseline is required after a fetch failure or an observed disabled state.
+Extra uses of a single invite are kept for up to ten seconds for queued joins.
+Unattributed joins have nullable inviter/code fields and never deduct credit.
+Serialization is per process; cross-process or crash-atomic accounting still
+requires database transactions or durable event claims.
 
 ## License
 
